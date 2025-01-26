@@ -1,9 +1,10 @@
 ## Simple shell helper script uses ollama
 
 ### Installation
-1. Download Modelfile
-2. `ollama create shell-helper:latest -f Modelfile`
-3. Download script
+1. Install curl jaq
+2. Download Modelfile
+3. `ollama create shell-helper:latest -f Modelfile`
+4. Download script
 
 ### Usages
 
