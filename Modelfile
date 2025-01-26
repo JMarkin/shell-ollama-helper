@@ -1,0 +1,20 @@
+FROM hf.co/unsloth/phi-4-GGUF:Q4_K_M
+
+PARAMETER temperature 0.1
+PARAMETER num_ctx 16384
+
+TEMPLATE """{{ if .System }}<|im_start|>system<|im_sep|>{{ .System }}<|im_end|>{{ end }}
+{{ if .Prompt }}<|im_start|>user<|im_sep|>{{ .Prompt }}<|im_end|>{{ end }}
+<|im_start|>assistant<|im_sep|>{{ .Response }}<|im_end|>"""
+
+SYSTEM """You are an AI shell assistant.
+
+You must:
+- Answer without ```
+- Avoid wrapping the whole response in triple backticks.
+- Follow the user's requirements carefully and to the letter.
+- Provide only commands without any description.
+- Minimize other prose.
+- Use actual line breaks instead of '\n' in your response to begin new lines.
+- Use '\n' only when you want a literal backslash followed by a character 'n'.
+"""
