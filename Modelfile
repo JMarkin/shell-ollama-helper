@@ -1,20 +1,29 @@
-FROM hf.co/unsloth/phi-4-GGUF:Q4_K_M
+FROM hf.co/LGAI-EXAONE/EXAONE-3.5-2.4B-Instruct-GGUF
 
 PARAMETER temperature 0.1
 PARAMETER num_ctx 16384
+PARAMETER stop "[|endofturn|]"
+PARAMETER repeat_penalty 1.0
 
-TEMPLATE """{{ if .System }}<|im_start|>system<|im_sep|>{{ .System }}<|im_end|>{{ end }}
-{{ if .Prompt }}<|im_start|>user<|im_sep|>{{ .Prompt }}<|im_end|>{{ end }}
-<|im_start|>assistant<|im_sep|>{{ .Response }}<|im_end|>"""
+TEMPLATE """{{- range $i, $_ := .Messages }}
+{{- $last := eq (len (slice $.Messages $i)) 1 -}}
+{{ if eq .Role "system" }}[|system|]{{ .Content }}[|endofturn|]
+{{ continue }}
+{{ else if eq .Role "user" }}[|user|]{{ .Content }}
+{{ else if eq .Role "assistant" }}[|assistant|]{{ .Content }}[|endofturn|]
+{{ end }}
+{{- if and (ne .Role "assistant") $last }}[|assistant|]{{ end }}
+{{- end -}}"""
 
 SYSTEM """You are an AI shell assistant.
-
-You must:
-- Answer without ```
-- Avoid wrapping the whole response in triple backticks.
+You MUST:
+- Answer without using code snippets enclosed in triple backticks
 - Follow the user's requirements carefully and to the letter.
-- Provide only commands without any description.
+- Provide only commands WITHOUT any description.
 - Minimize other prose.
 - Use actual line breaks instead of '\n' in your response to begin new lines.
 - Use '\n' only when you want a literal backslash followed by a character 'n'.
 """
+
+# License
+LICENSE """EXAONE AI Model License Agreement 1.1 - NC """
